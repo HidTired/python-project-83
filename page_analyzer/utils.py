@@ -1,36 +1,37 @@
-from urllib.parse import urlparse
+import requests
 from bs4 import BeautifulSoup
-from validators.url import url as validate_url
 
 
-def normalize_url(url):
-    result = urlparse(url)
-    new_result = result._replace(path="", params="", query="", fragment="")
-    return new_result.geturl()
+def check_website(url):
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()  
 
 
-def parse_html(html):
-    soup = BeautifulSoup(html.text, "lxml")
-    title = soup.find("title")
-    h1 = soup.find("h1")
-    description = soup.find("meta", attrs={"name": "description"})
-    return {
-        "title": title.text if title else None,
-        "h1": h1.text if h1 else None,
-        "description": (
-            description["content"]
-            if description and "content" in description.attrs
-            else None
-        ),
-    }
+        soup = BeautifulSoup(response.text, "html.parser")
 
 
-def validate(url):
-    errors = {}
-    if not url:
-        errors["url"] = "URL не должен быть пустым"
-    elif len(url) >= 255:
-        errors["url"] = "URL должен быть короче 255 символов"
-    elif not validate_url(url):
-        errors["url"] = "Некорректный URL"
-    return errors
+        h1_tag = soup.find("h1")
+        h1_content = h1_tag.text.strip() if h1_tag else ""
+
+
+        title_tag = soup.find("title")
+        title_content = title_tag.text.strip() if title_tag else ""
+
+
+        meta_desc = soup.find("meta", attrs={"name": "description"})
+        description_content = (
+            meta_desc.get("content", "").strip() if meta_desc else ""
+        )
+
+        return {
+            "status_code": response.status_code,
+            "h1": h1_content,
+            "title": title_content,
+            "description": description_content,
+        }
+
+    except requests.exceptions.RequestException:
+        return None
+    except Exception:
+        return None

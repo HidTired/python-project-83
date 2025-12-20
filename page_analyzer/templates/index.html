@@ -4,15 +4,15 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-12">
-        <h1 class="display-4 text-center">Добро пожаловать на нашу страницу анализа веб-сайтов!</h1>
-        <p class="lead text-center">Наш сервис поможет вам анализировать контент любого ресурса и получать отчёты о важных метриках.</p>
+    <div class="col-md-12" style="display: flex;flex-direction: column;align-items: center;justify-content: center;height: 62vh;"> 
+        <h1 class="display-4 text-center">Добро пожаловать! Эта страница для анализа веб-сайтов!</h1>
+        <p class="lead text-center">Проверяйте сайты на SEO-пригодность</p>
         
         <form action="" method="POST" class="mx-auto col-md-6 p-3 border rounded bg-white shadow-sm">
             <label for="url-input" class="form-label">Введите URL:</label>
             <input type="url" id="url-input" name="url" placeholder="https://example.com" required class="form-control">
             
-            <button type="submit" class="btn btn-success mt-3">Проанализировать</button>
+            <button type="submit" class="btn btn-success mt-3">Проверить</button>
         </form>
     </div>
 </div>
