@@ -1,0 +1,28 @@
+[project]
+name = "hexlet-code"
+version = "0.1.0"
+description = "Анализатор страниц"
+authors = [
+    { name = "HidTired", email = "DenTanyaBonya@mail.ru" },
+]
+license = { file = "LICENSE" }
+dependencies = [
+    "gunicorn>=23.0.0",
+]
+
+[build-system]
+requires = ["setuptools >= 61.0", "wheel"] # Рекомендуемые версии setuptools и wheel
+build-backend = "setuptools.build_meta"
+
+# Опционально: настраиваем параметры упаковки, если нужны особые правила построения проекта
+# [tool.setuptools.package-data]
+# include = ["*.txt", "*.rst"]
+
+# Можно задать требуемые зависимости прямо тут
+dependencies = [
+    "flask~=2.3.2",
+    "gunicorn~=20.1.0"
+]
+
+# Или оставить пустой секцию tool.* для дальнейших расширений
+[tool]
