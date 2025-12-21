@@ -2,7 +2,7 @@
 [![Actions Status](https://github.com/HidTired/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/HidTired/python-project-83/actions)
 
 # Анализатор веб-сайтов
-📋 Подробная инструкция по установке и запуску
+# 📋 Подробная инструкция по установке и запуску
 ## Предварительные требования
 Python 3.8+
 
