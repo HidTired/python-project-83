@@ -3,7 +3,7 @@ from psycopg2.extras import RealDictCursor
 from datetime import datetime
 
 
-def connect_db(app):
+def connect_db(app): 
     DATABASE_URL = app.config['DATABASE_URL']
     conn = psycopg2.connect(DATABASE_URL)
     conn.cursor_factory = RealDictCursor
@@ -36,7 +36,7 @@ def get_all_urls(conn):
         """)
         return curs.fetchall()
 
-
+# Проверка
 def insert_url(conn, url):
     now = datetime.now().date()
     with conn.cursor() as cursor:
