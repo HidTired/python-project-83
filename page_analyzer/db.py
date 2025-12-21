@@ -1,22 +1,19 @@
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import psycopg
+from psycopg.rows import dict_row
 from datetime import datetime
-
 
 def connect_db(app):
     DATABASE_URL = app.config['DATABASE_URL']
-    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    conn = psycopg.connect(DATABASE_URL)
+    conn.cursor_factory = dict_row  # ✅ psycopg3 синтаксис!
     return conn
-
 
 def close(conn):
     conn.close()
 
-
 def get_all_urls(conn):
-    with conn.cursor(cursor_factory=RealDictCursor) as curs:
-        curs.execute(
-            """
+    with conn.cursor() as curs:  # ✅ psycopg3 не требует cursor_factory
+        curs.execute("""
             SELECT
                 urls.id,
                 urls.name,
@@ -33,77 +30,43 @@ def get_all_urls(conn):
             ) AS last_checks
             ON urls.id = last_checks.url_id
             ORDER BY urls.id;
-            """
-        )
+        """)
         urls = curs.fetchall()
         return urls
 
-
 def insert_url(conn, url):
     now = datetime.now().date()
-    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+    with conn.cursor() as cursor:
         cursor.execute(
-            """
-            INSERT INTO urls (name, created_at) VALUES (%s, %s)
-            RETURNING id
-            """,
+            "INSERT INTO urls (name, created_at) VALUES (%s, %s) RETURNING id",
             (url, now),
         )
-        id = cursor.fetchone()["id"]
+        url_id = cursor.fetchone()["id"]
         conn.commit()
-        return id
-
+        return url_id
 
 def find(conn, url_id):
-    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-        cursor.execute(
-            """
-            SELECT * FROM urls
-            WHERE id = %s
-            """,
-            (url_id,),
-        )
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT * FROM urls WHERE id = %s", (url_id,))
         url = cursor.fetchone()
         if not url:
             return None
 
-        cursor.execute(
-            """
-            SELECT * FROM url_checks
-            WHERE url_id = %s
-            """,
-            (url_id,),
-        )
+        cursor.execute("SELECT * FROM url_checks WHERE url_id = %s", (url_id,))
         url["checks"] = cursor.fetchall()
         return url
 
-
 def check_url(conn, name):
-    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-        cursor.execute(
-            """
-            SELECT * FROM urls 
-            WHERE name = %s
-            """,
-            (name,),
-        )
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT * FROM urls WHERE name = %s", (name,))
         return cursor.fetchone()
 
-
-def insert_check(
-        conn,
-        url_id,
-        status_code,
-        h1=None,
-        title=None,
-        description=None
-):
+def insert_check(conn, url_id, status_code, h1=None, title=None, description=None):
     now = datetime.now().date()
-    with conn.cursor(cursor_factory=RealDictCursor) as curs:
+    with conn.cursor() as curs:
         curs.execute(
             """
-            INSERT INTO
-            url_checks (url_id, status_code, h1, title, description, created_at)
+            INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
             VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (url_id, status_code, h1, title, description, now),
