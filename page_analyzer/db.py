@@ -63,11 +63,10 @@ def insert_check(conn, url_id, status_code, h1=None, title=None,
                  description=None):
     now = datetime.now().date()
     with conn.cursor() as curs:
-        curs.execute(
-            """
-            INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
+        curs.execute("""
+            INSERT INTO url_checks (
+                url_id, status_code, h1, title, description, created_at
+            )
             VALUES (%s, %s, %s, %s, %s, %s)
-            """,
-            (url_id, status_code, h1, title, description, now),
-        )
+        """, (url_id, status_code, h1, title, description, now))
         conn.commit()

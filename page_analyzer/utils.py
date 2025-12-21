@@ -3,9 +3,11 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse, urlunparse
 
+
 def normalize_url(url):
     parsed = urlparse(url)
     return urlunparse((parsed.scheme, parsed.netloc, '', '', '', ''))
+
 
 def validate(url):
     """Валидация URL"""
@@ -16,6 +18,7 @@ def validate(url):
         return {"name": "Некорректный URL"}
     
     return None
+
 
 def check_website(url):
     try:
@@ -34,10 +37,10 @@ def check_website(url):
         description = desc_tag.get('content', '').strip() if desc_tag else ''
         
         return {
-            'status_code': response.status_code,  
-            'h1': h1_text[:255],       
+            'status_code': response.status_code,
+            'h1': h1_text[:255],
             'title': title[:255],
             'description': description[:255]
         }
-    except:
+    except Exception:
         return None
