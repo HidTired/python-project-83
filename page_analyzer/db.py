@@ -3,7 +3,7 @@ from psycopg2.extras import RealDictCursor
 from datetime import datetime
 
 
-def connect_db(app): 
+def connect_db(app):
     DATABASE_URL = app.config['DATABASE_URL']
     conn = psycopg2.connect(DATABASE_URL)
     conn.cursor_factory = RealDictCursor
@@ -36,7 +36,7 @@ def get_all_urls(conn):
         """)
         return curs.fetchall()
 
-# Проверка
+
 def insert_url(conn, url):
     now = datetime.now().date()
     with conn.cursor() as cursor:
@@ -55,7 +55,8 @@ def find(conn, url_id):
         url = cursor.fetchone()
         if url:
             cursor.execute(
-                "SELECT * FROM url_checks WHERE url_id = %s ORDER BY created_at DESC",
+                "SELECT * FROM url_checks WHERE url_id = %s "
+                "ORDER BY created_at DESC",
                 (url_id,)
             )
             url['checks'] = cursor.fetchall()
@@ -73,7 +74,9 @@ def insert_check(conn, url_id, status_code, h1=None, title=None,
     now = datetime.now().date()
     with conn.cursor() as curs:
         curs.execute("""
-            INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
+            INSERT INTO url_checks (
+                url_id, status_code, h1, title, description, created_at
+            )
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (url_id, status_code, h1, title, description, now))
         conn.commit()
