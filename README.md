@@ -2,6 +2,9 @@
 [![Actions Status](https://github.com/HidTired/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/HidTired/python-project-83/actions)
 
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=HidTired_python-project-83&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=HidTired_python-project-83)
+# render.com:
+
+https://python-project-83-wwvz.onrender.com/
 
 # Анализатор веб-сайтов
 # 📋 Подробная инструкция по установке и запуску
