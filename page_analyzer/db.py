@@ -1,17 +1,15 @@
-import psycopg
-from psycopg import dict_row 
+import psycopg2
+from psycopg2.extras import RealDictCursor  # ← psycopg2!
 from datetime import datetime
 
 def connect_db(app):
     DATABASE_URL = app.config['DATABASE_URL']
-    conn = psycopg.connect(DATABASE_URL)
-    conn.cursor_factory = dict_row
+    conn = psycopg2.connect(DATABASE_URL)
+    conn.cursor_factory = RealDictCursor  # ← psycopg2 аналог dict_row
     return conn
-
 
 def close(conn):
     conn.close()
-
 
 def get_all_urls(conn):
     with conn.cursor() as curs:
@@ -33,9 +31,7 @@ def get_all_urls(conn):
             ON urls.id = last_checks.url_id
             ORDER BY urls.id;
         """)
-        urls = curs.fetchall()
-        return urls
-
+        return curs.fetchall()
 
 def insert_url(conn, url):
     now = datetime.now().date()
@@ -44,10 +40,9 @@ def insert_url(conn, url):
             "INSERT INTO urls (name, created_at) VALUES (%s, %s) RETURNING id",
             (url, now),
         )
-        url_id = cursor.fetchone()['id']  # psycopg2 возвращает dict
+        url_id = cursor.fetchone()['id']  # ← dict доступ!
         conn.commit()
         return url_id
-
 
 def find(conn, url_id):
     with conn.cursor() as cursor:
@@ -55,17 +50,14 @@ def find(conn, url_id):
         url = cursor.fetchone()
         if not url:
             return None
-
         cursor.execute("SELECT * FROM url_checks WHERE url_id = %s", (url_id,))
         url['checks'] = cursor.fetchall()
         return url
-
 
 def check_url(conn, name):
     with conn.cursor() as cursor:
         cursor.execute("SELECT * FROM urls WHERE name = %s", (name,))
         return cursor.fetchone()
-
 
 def insert_check(conn, url_id, status_code, h1=None, title=None, description=None):
     now = datetime.now().date()

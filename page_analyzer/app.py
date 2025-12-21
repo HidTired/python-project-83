@@ -8,8 +8,8 @@ from flask import (
     abort
 )
 from dotenv import load_dotenv
-from . import utils
-from . import db 
+import utils
+import db 
 import os
 
 
@@ -91,11 +91,11 @@ def check_url(id_):
         return redirect(url_for("show_url", id_=id_))
     
     db.insert_check(
-        conn, id_, 200,  
-        parsed["h1"], 
-        parsed["title"], 
-        parsed["description"]
-    )
+    conn, id_, parsed["status_code"],  # ← status_code!
+    parsed["h1"], 
+    parsed["title"], 
+    parsed["description"]
+)
     conn.commit()
     conn.close()
     flash("Страница успешно проверена", "success")
