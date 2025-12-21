@@ -8,8 +8,8 @@ from flask import (
     abort
 )
 from dotenv import load_dotenv
-import utils
-import db 
+from . import utils
+from . import db  
 import os
 
 
