@@ -12,7 +12,6 @@ from . import utils
 from . import db  
 import os
 
-
 load_dotenv()
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
@@ -20,19 +19,11 @@ app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.secret_key = os.getenv("SECRET_KEY")  
+app.secret_key = os.getenv("SECRET_KEY") 
 
-@app.route("/", methods=["GET", "POST"])  
+@app.route("/", methods=["GET"])
 def index():
-    url = {"name": ""}
-    errors = {}
-    if request.method == "POST":  
-        url["name"] = request.form.get("url")
-        errors = utils.validate(url["name"]) or {}
-        if not errors:
-            return redirect(url_for("add_url"))  
-        flash(errors, "danger")
-    return render_template("index.html", url=url, errors=errors)
+    return render_template("index.html")
 
 @app.post("/urls")
 def add_url():
@@ -45,10 +36,9 @@ def add_url():
         return render_template('index.html'), 422
     result = utils.normalize_url(url)
     if existed := db.check_url(conn, result):
-        id_ = existed.get("id")  
-        conn.close()
         flash("Страница уже существует", "info")
-        return redirect(url_for("show_url", id_=id_))
+        conn.close()
+        return redirect(url_for("show_urls"))  
     else:
         id_ = db.insert_url(conn, result)
         conn.commit()
@@ -61,7 +51,7 @@ def show_urls():
     conn = db.connect_db(app)
     urls = db.get_all_urls(conn)
     conn.close()  
-    return render_template("urls.html", all_urls_checks=urls)  
+    return render_template("urls.html", all_urls_checks=urls) 
 
 @app.route("/urls/<int:id_>")  
 def show_url(id_):
@@ -71,8 +61,8 @@ def show_url(id_):
     if not url:
         abort(404, description="URL не найден")
     return render_template("url.html", 
-                           url_info=url, 
-                           url_checks=url["checks"])  
+                          url_info=url, 
+                          url_checks=url["checks"]) 
 
 @app.post("/urls/<int:id_>/checks")
 def check_url(id_):
@@ -93,11 +83,11 @@ def check_url(id_):
         return redirect(url_for("show_url", id_=id_))
     
     db.insert_check(
-    conn, id_, parsed["status_code"],  # ← status_code!
-    parsed["h1"], 
-    parsed["title"], 
-    parsed["description"]
-)
+        conn, id_, parsed["status_code"],
+        parsed["h1"], 
+        parsed["title"], 
+        parsed["description"]
+    )
     conn.commit()
     conn.close()
     flash("Страница успешно проверена", "success")
