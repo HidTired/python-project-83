@@ -45,11 +45,11 @@ Database: page_analyzer → Save
 ### Создайте таблицы (Query Tool):
 
 -- Удаляем старые (если есть)
-
+```
 DROP TABLE IF EXISTS url_checks;
 
 DROP TABLE IF EXISTS urls;
-
+```
 CREATE TABLE urls (
 
     id SERIAL PRIMARY KEY,
