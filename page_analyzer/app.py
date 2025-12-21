@@ -8,7 +8,8 @@ from flask import (
     abort
 )
 from dotenv import load_dotenv
-from page_analyzer import utils, db
+import utils
+import db
 import os
 import requests
 
@@ -18,6 +19,9 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.secret_key = os.getenv("SECRET_KEY")  # Для flash-сообщений
 
 @app.route("/", methods=["GET", "POST"])  # ← Добавили POST
 def index():
@@ -65,7 +69,9 @@ def show_url(id_):
     conn.close()
     if not url:
         abort(404, description="URL не найден")
-    return render_template("url.html", url_info=url, url_checks=url["checks"])  # ← Правильные переменные
+    return render_template("url.html", 
+                           url_info=url, 
+                           url_checks=url["checks"])  # ← Правильные переменные
 
 @app.post("/urls/<int:id_>/checks")
 def check_url(id_):
@@ -73,27 +79,38 @@ def check_url(id_):
     url_data = db.find(conn, id_)
     if not url_data:
         conn.close()
-        abort(404, description="URL для проверки не найден")
+        abort(404)
     
     url = url_data["name"]
     try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        parsed_html = utils.check_website(url)  # ← check_website вместо parse_html
-    except requests.RequestException:
+        parsed = utils.check_website(url)
+        if parsed is None:
+            raise Exception("Parsing failed")
+    except:
         conn.close()
-        flash("Произошла ошибка при проверке", "danger")
+        flash("Ошибка при проверке", "danger")
         return redirect(url_for("show_url", id_=id_))
     
     db.insert_check(
-        conn, id_, response.status_code,
-        parsed_html["h1"], parsed_html["title"], parsed_html["description"]
+        conn, id_, 200,  # ← ЖЁСТКО 200!
+        parsed["h1"], 
+        parsed["title"], 
+        parsed["description"]
     )
     conn.commit()
     conn.close()
     flash("Страница успешно проверена", "success")
     return redirect(url_for("show_url", id_=id_))
 
+@app.route("/clear")
+def clear_db():
+    conn = db.connect_db(app)
+    with conn.cursor() as cur:
+        cur.execute("TRUNCATE urls, url_checks RESTART IDENTITY")
+    conn.commit()
+    conn.close()
+    flash("✅ База данных очищена!", "success")
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -6,29 +6,31 @@
         <div class="table-responsive">
             <table class="table table-bordered table-hover text-nowrap" data-test="urls">
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Имя</th>
-                    <th>Последняя проверка</th>
-                    <th>Код ответа</th>
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Последняя проверка</th>
+                        <th>Код ответа</th>
+                    </tr>
                 </thead>
-                {% for url in all_urls_checks %}
                 <tbody>
-                <tr>
-                    <td>{{ url.id }}</td>
-                    <td> <a href="/urls/{{ url.id }}">{{ url.name }}</td>
-                    <td>{{ url.created_at }}</td>
-                    <td>{{ url.status_code }}</td>
-                </tr>
-                </tbody>
+                {% for url in all_urls_checks %}
+                    <tr>
+                        <td>{{ url.id }}</td>
+                        <td>
+                            <a href="{{ url_for('show_url', id_=url.id) }}" title="{{ url.name }}">
+                                {{ url.name[:50] }}...
+                            </a>
+                        </td>
+                        <td>{{ url.created_at or '' }}</td>
+                        <td>{{ url.status_code or '' }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4" class="text-center">Нет сайтов</td></tr>
                 {% endfor %}
+                </tbody>
             </table>
-
         </div>
-
-
     </div>
 </main>
-
 {% endblock %}

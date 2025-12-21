@@ -8,12 +8,24 @@
         <h1 class="display-4 text-center">Добро пожаловать! Эта страница для анализа веб-сайтов!</h1>
         <p class="lead text-center">Проверяйте сайты на SEO-пригодность</p>
         
-        <form action="" method="POST" class="mx-auto col-md-6 p-3 border rounded bg-white shadow-sm">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'danger' else category }} alert-dismissible fade show mx-auto col-md-6 mb-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
+        <form action="/urls" method="POST" class="mx-auto col-md-6 p-3 border rounded bg-white shadow-sm">
             <label for="url-input" class="form-label">Введите URL:</label>
-            <input type="url" id="url-input" name="url" placeholder="https://example.com" required class="form-control">
+            <input type="url" id="url-input" name="url" value="{{ url.name if url.name else '' }}" placeholder="https://example.com" required class="form-control">
             
             <button type="submit" class="btn btn-success mt-3">Проверить</button>
         </form>
     </div>
 </div>
+<a href="/clear" class="btn btn-danger mt-2">Очистить БД</a>
 {% endblock %}

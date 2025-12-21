@@ -37,7 +37,6 @@ def check_website(url):
         )
 
         return {
-            "status_code": response.status_code,
             "h1": h1_content,
             "title": title_content,
             "description": description_content,

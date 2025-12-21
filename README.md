@@ -1,14 +1,108 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/HidTired/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/HidTired/python-project-83/actions)
 
-.\.venv\Scripts\activate
-python -m pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 page_analyzer:app
-waitress-serve --port=8000 page_analyzer:app
+# Анализатор веб-сайтов
+📋 Подробная инструкция по установке и запуску
+## Предварительные требования
+Python 3.8+
 
-pip install -r ./requirements.txt
+PostgreSQL 16 (или новее)
 
-base.html — базовый шаблон для всей страницы, он содержит общие стили и оформление.
-index.html — главная страница, содержащая форму для ввода URL. Форма отправляет запрос методом POST.
-url.html — страница детальной информации о конкретном URL и истории проверок. Там есть форма для запуска новой проверки.
-urls.html — страница со списком всех зарегистрированных URL и историей проверок.
+pgAdmin 4 (для управления БД)
+
+# 🔧Установка PostgreSQL (Windows)
+
+## Скачайте установщик:
+
+https://www.postgresql.org/download/windows/
+↓ Windows x86-64 ↓ PostgreSQL 16 ↓ Download
+
+## 🔧Настройка базы данных
+
+Запустите pgAdmin 4 (из меню Пуск)
+
+### Подключитесь к серверу:
+
+
+Правый клик Servers → Register → Server
+
+Name: localhost
+
+Host: localhost
+
+Username: postgres
+
+Password: Введите ваш пароль и запомните его!
+
+Save → Connect ✅
+
+### Создайте БД page_analyzer:
+
+Правый клик Databases → Create → Database
+
+Database: page_analyzer → Save
+
+### Создайте таблицы (Query Tool):
+
+-- Удаляем старые (если есть)
+DROP TABLE IF EXISTS url_checks;
+DROP TABLE IF EXISTS urls;
+
+-- Создаём urls
+CREATE TABLE urls (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR UNIQUE NOT NULL,
+    created_at DATE NOT NULL
+);
+
+-- Создаём url_checks
+CREATE TABLE url_checks (
+    id SERIAL PRIMARY KEY,
+    url_id INTEGER REFERENCES urls(id),
+    status_code INTEGER,
+    h1 TEXT,
+    title TEXT,
+    description TEXT,
+    created_at DATE NOT NULL
+);
+
+-- Проверяем
+\dt
+
+# Установка Python-зависимостей
+powershell
+## Клонируйте/распакуйте проект
+cd python-project-83
+
+## Установите зависимости
+pip install -r requirements.txt
+
+## Настройка .env
+Скопируйте .env.example → .env
+
+### Сгенерируйте SECRET_KEY:
+
+python -c "import secrets; print('SECRET_KEY=' + secrets.token_hex(24))"
+### Отредактируйте .env:
+
+text
+SECRET_KEY=ваш_сгенерированный_ключ_здесь
+DATABASE_URL=postgresql://postgres:<ваш пароль>@localhost:5432/page_analyzer
+
+# Запуск приложения
+
+python page_analyzer/app.py
+
+# Тестирование функционала
+### Откройте: 
+http://127.0.0.1:5000/
+
+## ВВедите URL 
+### Нажмите на URL ссылку
+### Нажмите на 'Запустить проверку'
+
+## Очистка данных
+В интерфейсе:
+
+text
+Главная → [🗑️ Очистить БД] → "База данных очищена!"
