@@ -19,84 +19,80 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 
 
-@app.route("/",)
+@app.route("/", methods=["GET", "POST"])  # ← Добавили POST
 def index():
     url = {"name": ""}
     errors = {}
+    if request.method == "POST":  # ← Обработка формы
+        url["name"] = request.form.get("url")
+        errors = utils.validate(url["name"]) or {}
+        if not errors:
+            return redirect(url_for("add_url"))  # ← Перенаправление на add_url
+        flash(errors, "danger")
     return render_template("index.html", url=url, errors=errors)
-
 
 @app.post("/urls")
 def add_url():
     url = request.form.get("url")
-    errors = utils.validate(url)
+    errors = utils.validate(url) or {}
     conn = db.connect_db(app)
     if errors:
         flash(errors, "danger")
+        conn.close()
         return render_template('index.html'), 422
     result = utils.normalize_url(url)
     if existed := db.check_url(conn, result):
-        id = existed.get("id")
+        id_ = existed.get("id")  # ← id_ вместо id
         flash("Страница уже существует", "info")
     else:
-        id = db.insert_url(conn, result)
+        id_ = db.insert_url(conn, result)
         conn.commit()
-        conn.close()
         flash("Страница успешно добавлена", "success")
-    return redirect(url_for("show_url", id=id))
-
+    conn.close()
+    return redirect(url_for("show_urls"))  # ← show_urls вместо show_url
 
 @app.route("/urls")
 def show_urls():
     conn = db.connect_db(app)
     urls = db.get_all_urls(conn)
-    db.close(conn)
-    return render_template("/url.html", urls=urls, id=id)
+    conn.close()  # ← Было db.close(conn)
+    return render_template("urls.html", all_urls_checks=urls)  # ← Правильный шаблон + переменная
 
-
-@app.route("/urls/<int:id>")
-def show_url(id):
+@app.route("/urls/<int:id_>")  # ← id_ вместо id
+def show_url(id_):
     conn = db.connect_db(app)
-    url = db.find(conn, id)
+    url = db.find(conn, id_)
+    conn.close()
     if not url:
-        db.close(conn)
         abort(404, description="URL не найден")
-    db.close(conn)
-    return render_template("/urls.html", url=url)
+    return render_template("url.html", url_info=url, url_checks=url["checks"])  # ← Правильные переменные
 
-
-@app.post("/urls/<int:id>/checks")
-def check_url(id):
+@app.post("/urls/<int:id_>/checks")
+def check_url(id_):
     conn = db.connect_db(app)
-    url_data = db.find(conn, id)
-    url = url_data["name"]
-
+    url_data = db.find(conn, id_)
     if not url_data:
-        db.close(conn)
+        conn.close()
         abort(404, description="URL для проверки не найден")
-
+    
+    url = url_data["name"]
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         response.raise_for_status()
+        parsed_html = utils.check_website(url)  # ← check_website вместо parse_html
     except requests.RequestException:
-        db.close(conn)
+        conn.close()
         flash("Произошла ошибка при проверке", "danger")
-        return redirect(url_for("show_url", id=id))
-
-    status_code = response.status_code
-    parsed_html = utils.parse_html(response)
-
+        return redirect(url_for("show_url", id_=id_))
+    
     db.insert_check(
-        conn,
-        id,
-        status_code,
-        parsed_html["h1"],
-        parsed_html["title"],
-        parsed_html["description"],
+        conn, id_, response.status_code,
+        parsed_html["h1"], parsed_html["title"], parsed_html["description"]
     )
-    db.close(conn)
+    conn.commit()
+    conn.close()
     flash("Страница успешно проверена", "success")
-    return redirect(url_for("show_url", id=id))
+    return redirect(url_for("show_url", id_=id_))
 
 
 if __name__ == "__main__":
