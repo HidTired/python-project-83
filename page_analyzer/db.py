@@ -1,11 +1,11 @@
-import psycopg
-from psycopg.extras import RealDictCursor 
+import psycopg2
+from psycopg2.extras import RealDictCursor  # ← psycopg2!
 from datetime import datetime
 
 def connect_db(app):
     DATABASE_URL = app.config['DATABASE_URL']
-    conn = psycopg.connect(DATABASE_URL)
-    conn.cursor_factory = RealDictCursor 
+    conn = psycopg2.connect(DATABASE_URL)
+    conn.cursor_factory = RealDictCursor  # ← psycopg2 аналог dict_row
     return conn
 
 def close(conn):
