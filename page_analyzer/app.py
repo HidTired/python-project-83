@@ -79,7 +79,7 @@ def check_url(id_):
             raise Exception("Parsing failed")
     except:
         conn.close()
-        flash("Ошибка при проверке", "danger")
+        flash("Произошла ошибка при проверке", "danger")
         return redirect(url_for("show_url", id_=id_))
     
     db.insert_check(
