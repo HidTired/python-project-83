@@ -1,6 +1,6 @@
 CREATE TABLE urls (
     id SERIAL PRIMARY KEY,
-    name VARCHAR UNIQUE NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
     created_at DATE NOT NULL
 );
 
