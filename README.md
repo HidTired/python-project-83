@@ -46,27 +46,38 @@ Database: page_analyzer → Save
 
 -- Удаляем старые (если есть)
 DROP TABLE IF EXISTS url_checks;
+
 DROP TABLE IF EXISTS urls;
 
--- Создаём urls
 CREATE TABLE urls (
+
     id SERIAL PRIMARY KEY,
+
     name VARCHAR UNIQUE NOT NULL,
+
     created_at DATE NOT NULL
+
 );
 
--- Создаём url_checks
 CREATE TABLE url_checks (
+
     id SERIAL PRIMARY KEY,
+
     url_id INTEGER REFERENCES urls(id),
+
     status_code INTEGER,
+
     h1 TEXT,
+
     title TEXT,
+
     description TEXT,
+
     created_at DATE NOT NULL
+
 );
 
--- Проверяем
+### Проверяем
 \dt
 
 # Установка Python-зависимостей
