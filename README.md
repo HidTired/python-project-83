@@ -91,7 +91,7 @@ cd python-project-83
 
 uv sync
 
-# ИЛИ классический способ:
+### ИЛИ классический способ:
 
 pip install -e .
 
@@ -110,7 +110,7 @@ DATABASE_URL=postgresql://postgres:<ваш пароль>@localhost:5432/page_ana
 
 python page_analyzer/app.py
 
-# Тестирование функционала
+### Тестирование функционала
 ### Откройте: 
 http://127.0.0.1:5000/
 

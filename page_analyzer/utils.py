@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def normalize_url(url):
     from urllib.parse import urlparse, urlunparse
@@ -7,12 +8,14 @@ def normalize_url(url):
     return urlunparse(parsed._replace(path=parsed.path.rstrip('/'), query=''))
 
 def validate(url):
-    errors = {}
+    """Валидация URL"""
     if not url:
-        errors["url"] = "URL обязателен"
-    elif not url.startswith(("http://", "https://")):
-        errors["url"] = "Некорректный URL"
-    return errors
+        return {"name": "URL обязателен"}
+    
+    if not re.match(r'^https?://[^\s<>"]+|www\.[^\s<>"]+', url):
+        return {"name": "Некорректный URL"}
+    
+    return None
 def check_website(url):
     try:
         response = requests.get(url, timeout=10)

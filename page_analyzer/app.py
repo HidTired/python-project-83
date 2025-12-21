@@ -30,7 +30,7 @@ def index():
         url["name"] = request.form.get("url")
         errors = utils.validate(url["name"]) or {}
         if not errors:
-            return redirect(url_for("add_url"))  
+            return redirect(url_for("urls"))  
         flash(errors, "danger")
     return render_template("index.html", url=url, errors=errors)
 
