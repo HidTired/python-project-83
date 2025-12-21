@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 
 def normalize_url(url):
-    # Простая нормализация (добавьте если нет)
     from urllib.parse import urlparse, urlunparse
     parsed = urlparse(url)
     return urlunparse(parsed._replace(path=parsed.path.rstrip('/'), query=''))

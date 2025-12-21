@@ -88,7 +88,12 @@ CREATE TABLE url_checks (
 cd python-project-83
 
 ## Установите зависимости
-pip install -r requirements.txt
+
+uv sync
+
+# ИЛИ классический способ:
+
+pip install -e .
 
 ## Настройка .env
 Скопируйте .env.example → .env

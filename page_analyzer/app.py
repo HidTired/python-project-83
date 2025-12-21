@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 import utils
 import db
 import os
-import requests
 
 
 load_dotenv()
@@ -21,17 +20,17 @@ app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.secret_key = os.getenv("SECRET_KEY")  # Для flash-сообщений
+app.secret_key = os.getenv("SECRET_KEY")  
 
-@app.route("/", methods=["GET", "POST"])  # ← Добавили POST
+@app.route("/", methods=["GET", "POST"])  
 def index():
     url = {"name": ""}
     errors = {}
-    if request.method == "POST":  # ← Обработка формы
+    if request.method == "POST":  
         url["name"] = request.form.get("url")
         errors = utils.validate(url["name"]) or {}
         if not errors:
-            return redirect(url_for("add_url"))  # ← Перенаправление на add_url
+            return redirect(url_for("add_url"))  
         flash(errors, "danger")
     return render_template("index.html", url=url, errors=errors)
 
@@ -46,23 +45,23 @@ def add_url():
         return render_template('index.html'), 422
     result = utils.normalize_url(url)
     if existed := db.check_url(conn, result):
-        id_ = existed.get("id")  # ← id_ вместо id
+        id_ = existed.get("id")  
         flash("Страница уже существует", "info")
     else:
         id_ = db.insert_url(conn, result)
         conn.commit()
         flash("Страница успешно добавлена", "success")
     conn.close()
-    return redirect(url_for("show_urls"))  # ← show_urls вместо show_url
+    return redirect(url_for("show_urls"))  
 
 @app.route("/urls")
 def show_urls():
     conn = db.connect_db(app)
     urls = db.get_all_urls(conn)
-    conn.close()  # ← Было db.close(conn)
-    return render_template("urls.html", all_urls_checks=urls)  # ← Правильный шаблон + переменная
+    conn.close()  
+    return render_template("urls.html", all_urls_checks=urls)  
 
-@app.route("/urls/<int:id_>")  # ← id_ вместо id
+@app.route("/urls/<int:id_>")  
 def show_url(id_):
     conn = db.connect_db(app)
     url = db.find(conn, id_)
@@ -71,7 +70,7 @@ def show_url(id_):
         abort(404, description="URL не найден")
     return render_template("url.html", 
                            url_info=url, 
-                           url_checks=url["checks"])  # ← Правильные переменные
+                           url_checks=url["checks"])  
 
 @app.post("/urls/<int:id_>/checks")
 def check_url(id_):
@@ -92,7 +91,7 @@ def check_url(id_):
         return redirect(url_for("show_url", id_=id_))
     
     db.insert_check(
-        conn, id_, 200,  # ← ЖЁСТКО 200!
+        conn, id_, 200,  
         parsed["h1"], 
         parsed["title"], 
         parsed["description"]
