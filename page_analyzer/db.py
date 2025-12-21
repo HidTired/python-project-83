@@ -4,7 +4,9 @@ from datetime import datetime
 
 
 def connect_db(app):
-    return psycopg2.connect(app.config['DATABASE_URL'])
+    DATABASE_URL = app.config['DATABASE_URL']
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    return conn
 
 
 def close(conn):
