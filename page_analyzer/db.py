@@ -1,11 +1,11 @@
 import psycopg2
-from psycopg2.extras import RealDictCursor  # ← psycopg2!
+from psycopg2.extras import RealDictCursor 
 from datetime import datetime
 
 def connect_db(app):
     DATABASE_URL = app.config['DATABASE_URL']
     conn = psycopg2.connect(DATABASE_URL)
-    conn.cursor_factory = RealDictCursor  # ← psycopg2 аналог dict_row
+    conn.cursor_factory = RealDictCursor 
     return conn
 
 def close(conn):
@@ -59,7 +59,8 @@ def check_url(conn, name):
         cursor.execute("SELECT * FROM urls WHERE name = %s", (name,))
         return cursor.fetchone()
 
-def insert_check(conn, url_id, status_code, h1=None, title=None, description=None):
+def insert_check(conn, url_id, status_code, h1=None, title=None, 
+                 description=None):
     now = datetime.now().date()
     with conn.cursor() as curs:
         curs.execute(
