@@ -46,7 +46,9 @@ def add_url():
     result = utils.normalize_url(url)
     if existed := db.check_url(conn, result):
         id_ = existed.get("id")  
+        conn.close()
         flash("Страница уже существует", "info")
+        return redirect(url_for("show_url", id_=id_))
     else:
         id_ = db.insert_url(conn, result)
         conn.commit()
