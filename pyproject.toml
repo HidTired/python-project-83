@@ -9,16 +9,14 @@ authors = [
 dependencies = [
     "Flask==3.0.3",
     "python-dotenv==1.0.1", 
-    "psycopg[binary]==3.2.1",
+    "psycopg[binary]==2.9.9",
     "requests==2.31.0",
     "beautifulsoup4==4.12.3",
     "gunicorn==23.0.0"
 ]
 
-dependency-groups.dev = [
-    "pytest",
-    "playwright==1.54.0"
-]
+dependency-groups.dev
+requires = ["pytest", "playwright==1.54.0"]
 
 [build-system]
 requires = ["hatchling"]
