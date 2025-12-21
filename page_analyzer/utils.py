@@ -1,11 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+from urllib.parse import urlparse, urlunparse
 
 def normalize_url(url):
-    from urllib.parse import urlparse, urlunparse
     parsed = urlparse(url)
-    return urlunparse(parsed._replace(path=parsed.path.rstrip('/'), query=''))
+    return urlunparse((parsed.scheme, parsed.netloc, '', '', '', ''))
 
 def validate(url):
     """Валидация URL"""
@@ -16,17 +16,16 @@ def validate(url):
         return {"name": "Некорректный URL"}
     
     return None
+
 def check_website(url):
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         
         soup = BeautifulSoup(response.text, 'html.parser')
-        
 
         h1 = soup.find('h1')
         h1_text = h1.get_text(strip=True) if h1 else ''
-        
 
         title_tag = soup.find('title')
         title = title_tag.get_text(strip=True) if title_tag else ''

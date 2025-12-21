@@ -38,13 +38,13 @@ def add_url():
     if existed := db.check_url(conn, result):
         flash("Страница уже существует", "info")
         conn.close()
-        return redirect(url_for("show_urls"))  
+        return redirect(url_for("show_url", id_=existed["id"]))
     else:
         id_ = db.insert_url(conn, result)
         conn.commit()
         flash("Страница успешно добавлена", "success")
     conn.close()
-    return redirect(url_for("show_urls"))  
+    return redirect(url_for("show_urls")) 
 
 @app.route("/urls")
 def show_urls():
@@ -79,7 +79,7 @@ def check_url(id_):
             raise Exception("Parsing failed")
     except:
         conn.close()
-        flash("Произошла ошибка при проверке", "danger")
+        flash("Произошла ошибка при проверке", "danger" )
         return redirect(url_for("show_url", id_=id_))
     
     db.insert_check(
