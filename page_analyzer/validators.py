@@ -1,18 +1,21 @@
-import re
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse
+
+import validators
 
 
 def normalize_url(url):
-    parsed = urlparse(url)
-    return urlunparse((parsed.scheme, parsed.netloc, '', '', '', ''))
+    parsed_url = urlparse(url)
+    return f"{parsed_url.scheme}://{parsed_url.netloc}"
 
 
-def validate(url):
-    """Валидация URL"""
+def validate_url(url):
     if not url:
-        return {"name": "URL обязателен"}
-    
-    if not re.match(r'^https?://[^\s<>"]+|www\.[^\s<>"]+', url):
-        return {"name": "Некорректный URL"}
-    
+        return "URL обязателен"
+
+    if len(url) > 255:
+        return "URL превышает 255 символов"
+
+    if not validators.url(url):
+        return "Некорректный URL"
+
     return None
