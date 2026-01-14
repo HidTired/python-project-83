@@ -12,11 +12,6 @@ dev:
 start:
     gunicorn -w 5 -b 0.0.0.0:$(PORT) page_analyzer:app
 
-# Скрипт сборки
-build:
-    chmod +x build.sh
-    ./build.sh
-
 # Команда для деплоя на Render
 render-start:
     gunicorn -w 5 -b 0.0.0.0:8000 page_analyzer:app

@@ -1,6 +1,7 @@
+from datetime import datetime
+
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from datetime import datetime
 
 
 def connect_db(app):

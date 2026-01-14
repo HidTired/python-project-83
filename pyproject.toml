@@ -9,7 +9,6 @@ authors = [
 dependencies = [
     "Flask==3.0.3",
     "python-dotenv==1.0.1", 
-    "psycopg-binary>=2.9.10",
     "psycopg2-binary>=2.9.10",
     "requests==2.31.0",
     "beautifulsoup4==4.12.3",

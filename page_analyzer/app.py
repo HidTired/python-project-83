@@ -1,17 +1,17 @@
-from flask import (
-    Flask,
-    render_template,
-    redirect,
-    url_for,
-    flash,
-    request,
-    abort
-)
-from dotenv import load_dotenv
-from . import utils
-from . import db
 import os
 
+from dotenv import load_dotenv
+from flask import (
+    Flask,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+
+from . import db, utils
 
 load_dotenv()
 app = Flask(__name__)
