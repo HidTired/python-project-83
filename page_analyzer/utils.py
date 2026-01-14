@@ -1,7 +1,8 @@
-import requests
-from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse, urlunparse
+
+import requests
+from bs4 import BeautifulSoup
 
 
 def normalize_url(url):
