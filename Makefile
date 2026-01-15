@@ -4,7 +4,7 @@ install:
 	uv sync --dev
 
 lint:
-	uvx run ruff check .
+	uvx ruff check .
 
 # Локальная разработка (режим debug)
 dev:
