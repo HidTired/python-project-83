@@ -6,7 +6,7 @@ install:
 
 # Мой тест
 lint:
-	uv run ruff check .
+	uvx ruff check .
 
 # Локальная разработка (режим debug)
 dev:
