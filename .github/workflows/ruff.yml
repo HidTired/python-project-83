@@ -8,24 +8,16 @@ env:
   CI: true
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v4
       
-      - name: Set up Python3
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      
-      - name: Install uv
+      - name: Setup Python & uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           source ~/.cargo/env
+          uv sync
       
-      - name: Install dependencies
-        run: make install
-      
-      - name: Run linter
-        run: make lint
+      - name: Lint with ruff
+        run: uvx ruff check .
