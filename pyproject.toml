@@ -15,9 +15,11 @@ dependencies = [
     "gunicorn==23.0.0"
 ]
 
-[dependency-groups.dev]
-ruff = ">=0.6.0"
-pytest = ">=8.0.0"
+[dependency-groups]
+dev = [
+    "ruff>=0.6.0",
+    "pytest>=8.0.0"
+]
 
 [build-system]
 requires = ["hatchling"]
