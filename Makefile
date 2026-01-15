@@ -1,10 +1,10 @@
 .PHONY: install dev start build render-start
 
 install:
-	uv sync
+	uv sync --dev
 
 lint:
-	uv run ruff check .
+	uvx run ruff check .
 
 # Локальная разработка (режим debug)
 dev:
