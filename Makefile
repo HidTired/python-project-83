@@ -1,10 +1,8 @@
 .PHONY: install dev start build render-start
 
-# Установка зависимостей
 install:
-    uv sync
+	uv sync
 
-# Мой тест
 lint:
 	uv run ruff check .
 
