@@ -2,7 +2,7 @@
 
 # Установка зависимостей
 install:
-    uv sync
+    uv sync --dev
 
 # Мой тест
 lint:
