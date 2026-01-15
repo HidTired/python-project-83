@@ -8,7 +8,6 @@ lint:
 
 # Локальная разработка (режим debug)
 dev:
-	uv run flask --debug --app src.page_analyzer:app run
     uv run flask --debug --app page_analyzer:app run
 
 # Запуск приложения с помощью Gunicorn (для продакшена)

@@ -1,7 +1,5 @@
 import os
 
-import db
-import utils
 from dotenv import load_dotenv
 from flask import (
     Flask,
@@ -12,6 +10,8 @@ from flask import (
     request,
     url_for,
 )
+
+from . import db, utils
 
 load_dotenv()
 app = Flask(__name__)
