@@ -3,7 +3,11 @@
 # Установка зависимостей
 install:
     uv sync
- 
+
+# Мой тест
+lint:
+	uv run ruff check .
+
 # Локальная разработка (режим debug)
 dev:
     uv run flask --debug --app src.page_analyzer:app run
