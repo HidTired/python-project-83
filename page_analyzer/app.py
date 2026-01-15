@@ -85,7 +85,7 @@ def check_url(id_):
         parsed = check_website(url)
         if parsed is None:
             raise Exception("Parsing failed")
-    except Exception:  # ✅ НЕ bare except!
+    except Exception:
         conn.close()
         flash("Произошла ошибка при проверке", "danger")
         return redirect(url_for("show_url", id_=id_))
