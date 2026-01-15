@@ -1,9 +1,9 @@
-
 import requests
 from bs4 import BeautifulSoup
 
 
 def check_website(url):
+    """Парсит сайт и возвращает метаданные"""
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()

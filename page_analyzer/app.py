@@ -11,7 +11,9 @@ from flask import (
     url_for,
 )
 
-from . import db, utils
+from . import db
+from .parser import check_website
+from .validators import normalize_url, validate_url
 
 load_dotenv()
 app = Flask(__name__)
@@ -31,13 +33,13 @@ def index():
 @app.post("/urls")
 def add_url():
     url = request.form.get("url")
-    errors = utils.validate(url) or {}
+    errors = validate_url(url) or {}
     conn = db.connect_db(app)
     if errors:
         flash(errors, "danger")
         conn.close()
         return render_template('index.html'), 422
-    result = utils.normalize_url(url)
+    result = normalize_url(url)
     if existed := db.check_url(conn, result):
         flash("Страница уже существует", "info")
         conn.close()
@@ -80,12 +82,12 @@ def check_url(id_):
 
     url = url_data["name"]
     try:
-        parsed = utils.check_website(url)
+        parsed = check_website(url)
         if parsed is None:
             raise Exception("Parsing failed")
     except Exception:  # ✅ НЕ bare except!
         conn.close()
-        flash("Произошла ошибка при проверке", "danger")  # ✅ без пробела
+        flash("Произошла ошибка при проверке", "danger")
         return redirect(url_for("show_url", id_=id_))
 
     db.insert_check(

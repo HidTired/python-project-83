@@ -1,21 +1,23 @@
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 import validators
 
 
 def normalize_url(url):
-    parsed_url = urlparse(url)
-    return f"{parsed_url.scheme}://{parsed_url.netloc}"
+    """Нормализует URL до scheme://netloc"""
+    parsed = urlparse(url)
+    return urlunparse((parsed.scheme, parsed.netloc, '', '', '', ''))
 
 
 def validate_url(url):
+    """Валидация URL с подробными ошибками"""
     if not url:
-        return "URL обязателен"
-
+        return {"name": "URL обязателен"}
+    
     if len(url) > 255:
-        return "URL превышает 255 символов"
-
+        return {"name": "URL превышает 255 символов"}
+    
     if not validators.url(url):
-        return "Некорректный URL"
-
+        return {"name": "Некорректный URL"}
+    
     return None
